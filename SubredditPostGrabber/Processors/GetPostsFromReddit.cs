@@ -63,7 +63,7 @@ namespace SubredditPostGrabber.Processors
             foreach (var letter in chars)
             {
                 var posts = new List<MattPost>();
-                var started = DateTime.Now.ToString();
+                var started = DateTime.Now.ToString(DateTimeFormatString);
                 int counter = 0;
                 //1000 is all we can get :(
                 var postCount = 1000;
