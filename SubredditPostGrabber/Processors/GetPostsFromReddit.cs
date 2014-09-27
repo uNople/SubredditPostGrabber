@@ -51,7 +51,7 @@ namespace SubredditPostGrabber.Processors
                 IsSelfPost = post.IsSelfPost,
                 PostDate = post.CreatedUTC,
                 Author = post.AuthorName,
-                Tag = post.LinkFlairText
+                Tag = post.LinkFlairText,
             };
         }
         #endregion
