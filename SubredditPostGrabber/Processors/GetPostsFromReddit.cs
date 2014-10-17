@@ -38,9 +38,9 @@ namespace SubredditPostGrabber.Processors
             LoadPostsByAuthor();
         }
 
-        public void LoadNewPostsFromRedditAndSave()
+        public void LoadNewPostsFromRedditAndSave(int totalPostsToGet = 1000)
         {
-            GetPostsByType(GetBy.New);
+            GetPostsByType(GetBy.New, totalPostsToGet);
         }
         
         #region Utility
@@ -129,17 +129,15 @@ namespace SubredditPostGrabber.Processors
             }
         }
 
-        public void GetPostsByType(GetBy getBy)
+        public void GetPostsByType(GetBy getBy, int totalPostsToGet = 1000)
         {
             var posts = new List<MattPost>();
             var started = DateTime.Now.ToString(DateTimeFormatString);
             int counter = 0;
-            //1000 is all we can get :(
-            var postCount = 1000;
             var lastCounterValue = counter;
             var numTimesStayedSame = 0;
 
-            while (counter < postCount)
+            while (counter < totalPostsToGet)
             {
                 lastCounterValue = counter;
                 counter = GetPosts(counter, getBy, posts, out posts);
