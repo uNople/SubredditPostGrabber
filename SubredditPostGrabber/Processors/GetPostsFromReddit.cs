@@ -27,11 +27,20 @@ namespace SubredditPostGrabber.Processors
             Subreddit = subreddit;
         }
 
+        /// <summary>
+        /// Loads the posts from reddit and saves to files.
+        /// This is getting everything. All of it.
+        /// </summary>
         public void LoadPostsFromRedditAndSave()
         {
             LoadPostsFromRedditViaEnum();
             LoadPostsFromRedditViaSearching();
             LoadPostsByAuthor();
+        }
+
+        public void LoadNewPostsFromRedditAndSave()
+        {
+            GetPostsByType(GetBy.New);
         }
         
         #region Utility
@@ -116,31 +125,36 @@ namespace SubredditPostGrabber.Processors
         {
             foreach (GetBy getBy in (GetBy[])Enum.GetValues(typeof(GetBy)))
             {
-                var posts = new List<MattPost>();
-                var started = DateTime.Now.ToString(DateTimeFormatString);
-                int counter = 0;
-                //1000 is all we can get :(
-                var postCount = 1000;
-                var lastCounterValue = counter;
-                var numTimesStayedSame = 0;
-
-                while (counter < postCount)
-                {
-                    lastCounterValue = counter;
-                    counter = GetPosts(counter, getBy, posts, out posts);
-                    SaveLoadData.SavePosts(Path.Combine(SaveDirectory, string.Format(TemporarySaveFileFormatString, started, getBy, counter)), posts);
-                    if (lastCounterValue == counter)
-                    {
-                        numTimesStayedSame++;
-                    }
-                    //If we've not changed the amount we're up to 4 times in a row, break out of here.
-                    if (numTimesStayedSame > 4)
-                    {
-                        break;
-                    }
-                }
-                SaveLoadData.SavePosts(Path.Combine(SaveDirectory, string.Format(SaveFileFormatString, getBy, started)), posts);
+                GetPostsByType(getBy); 
             }
+        }
+
+        public void GetPostsByType(GetBy getBy)
+        {
+            var posts = new List<MattPost>();
+            var started = DateTime.Now.ToString(DateTimeFormatString);
+            int counter = 0;
+            //1000 is all we can get :(
+            var postCount = 1000;
+            var lastCounterValue = counter;
+            var numTimesStayedSame = 0;
+
+            while (counter < postCount)
+            {
+                lastCounterValue = counter;
+                counter = GetPosts(counter, getBy, posts, out posts);
+                SaveLoadData.SavePosts(Path.Combine(SaveDirectory, string.Format(TemporarySaveFileFormatString, started, getBy, counter)), posts);
+                if (lastCounterValue == counter)
+                {
+                    numTimesStayedSame++;
+                }
+                //If we've not changed the amount we're up to 4 times in a row, break out of here.
+                if (numTimesStayedSame > 4)
+                {
+                    break;
+                }
+            }
+            SaveLoadData.SavePosts(Path.Combine(SaveDirectory, string.Format(SaveFileFormatString, getBy, started)), posts);
         }
 
         /// <Summary>
