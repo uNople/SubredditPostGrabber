@@ -14,6 +14,9 @@ namespace SubredditPostGrabber.Holders
         public string Id { get; set; }
         public string ParentId { get; set; }
         public string Shortlink { get; set; }
+        public DateTime CreatedUTC { get; set; }
+        public string Subreddit { get; set; }
+        public int Upvotes { get; set; }
 
         public MattComment() {} // needed for serialization
 
@@ -24,6 +27,9 @@ namespace SubredditPostGrabber.Holders
             Id = comment.Id;
             ParentId = comment.ParentId;
             Shortlink = comment.Shortlink;
+            CreatedUTC = comment.CreatedUTC;
+            Subreddit = comment.Subreddit;
+            Upvotes = comment.Upvotes;
         }
     }
 }

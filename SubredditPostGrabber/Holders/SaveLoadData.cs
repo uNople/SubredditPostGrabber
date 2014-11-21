@@ -78,6 +78,11 @@ namespace SubredditPostGrabber.Holders
                         }
                         else
                         {
+                            var existingPost = posts.FirstOrDefault(x => x.Id.Equals(post.Id));
+                            if (post.Votes > existingPost.Votes)
+                            {
+                                existingPost.Votes = post.Votes;
+                            }
                             nonUnique++;
                         }
                     }
@@ -107,7 +112,7 @@ namespace SubredditPostGrabber.Holders
             {
                 xs.Serialize(wr, comments);
             }
-            Console.WriteLine("Saved comments into file {0}", savePath);
+            Console.WriteLine("Saved {0} comments into file {1}", comments.Count, savePath);
         }
 
         /// <summary>

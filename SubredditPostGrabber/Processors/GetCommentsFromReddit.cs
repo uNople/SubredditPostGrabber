@@ -35,14 +35,17 @@ namespace SubredditPostGrabber.Processors
                 {
                     var postData = reddit.GetPost(new Uri(post.URL));
 
+                    int commentCount = 0;
                     foreach (var comment in postData.Comments)
                     {
                         comments.Add(new MattComment(comment));
+                        commentCount++;
                     }
+                    Console.WriteLine("Got {0} comments for post titled '{1}'", commentCount, postData.Title);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Problem when getting comment for post {0}. Stacktrace: {1}", post.Title, ex.ToString());
+                    Console.WriteLine("Problem when getting comments for post {0}. Stacktrace: {1}", post.Title, ex.ToString());
                 }
                 SaveLoadData.SaveComments(SaveFile, comments);
             }
