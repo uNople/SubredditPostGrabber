@@ -176,5 +176,72 @@ namespace SubredditPostGrabber.Holders
             return comments;
         }
         #endregion
+
+        #region Save / Load Subreddit Data
+        /// <Summary>
+        /// Serialises the post object into XML and saves it to disk.
+        /// This will throw an exception if it fails, so watch out for that
+        /// </Summary>
+        /// <param name="savePath">The path you want to save this into. This is c:\path\file.xml, not just c:\path</param>
+        /// <param name="subreddit">The posts you want to save.</param>
+        public static void SaveSubreddit(string savePath, MattSubreddit subreddit)
+        {
+            var xs = new XmlSerializer(typeof(MattSubreddit));
+
+            using (var wr = new StreamWriter(savePath))
+            {
+                xs.Serialize(wr, subreddit);
+            }
+            Console.WriteLine("Saved {0} data into file {1}", subreddit.Name, savePath);
+        }
+
+        /// <summary>
+        /// Deserialises the saved XML into a List{MattPost}
+        /// Will throw an exception if there's an issue
+        /// </summary>
+        /// <param name="fileName">Name of the file you want to load.</param>
+        /// <returns>The file as a List{MattPost}</returns>
+        public static MattSubreddit LoadSubreddit(string fileName)
+        {
+            var xs = new XmlSerializer(typeof(MattSubreddit));
+
+            using (var rd = new StreamReader(fileName))
+            {
+                // This little beauty here strips out all un-readable Xml characters like in the comment above.
+                // We can deserialise with confidence knowing that we're not going to run into parse errors.
+                var xmlTextReader = new XmlTextReader(rd) { Normalization = false };
+
+                return xs.Deserialize(xmlTextReader) as MattSubreddit;
+            }
+        }
+
+        /// <summary>
+        /// Loads all posts from the specified directory of posts and returns one list.
+        /// This is so we can go through all the saved posts we got at certain times and
+        /// amalgamate them into one nice list
+        /// </summary>
+        /// <param name="directoryName">Name of the directory.</param>
+        /// <param name="pattern">The search pattern. This is a windows one, not a regex, so one like *.xml or HFY_*_*.xml.</param>
+        /// <param name="searchOptions">The search options.</param>
+        /// <returns>A List{MattPost}</returns>
+        public static List<MattSubreddit> LoadDirectoryOfSubredditData(string directoryName, string pattern, SearchOption searchOptions)
+        {
+            var subreddits = new List<MattSubreddit>();
+            foreach (var file in ExtensionMethods.EnumerateFiles(directoryName, pattern, searchOptions))
+            {
+                try
+                {
+                    // This is why this is in a try/catch - if any files are attempted to be
+                    // deserialized that aren't the right format it will blow up.
+                    subreddits.Add(SaveLoadData.LoadSubreddit(file));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("File {0} is likely not the right format. Stacktrace: {1}", file, ex);
+                }
+            }
+            return subreddits;
+        }
+        #endregion
     }
 }
