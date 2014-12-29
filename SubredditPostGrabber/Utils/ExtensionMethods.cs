@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SubredditPostGrabber.Utils
@@ -72,6 +74,32 @@ namespace SubredditPostGrabber.Utils
                 //when there's an exception return nothing
                 return Enumerable.Empty<string>();
             }
+        }
+
+        /// <summary>
+        /// Gets the very start of a day
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns>Midnight on the day you enter in</returns>
+        public static DateTime StartOfDay(this DateTime date)
+        {
+            return date.Date;
+        }
+
+        /// <summary>
+        /// Gets the very end of the datetime you enter
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns>23:59:59.999 on the date</returns>
+        public static DateTime EndOfDay(this DateTime date)
+        {
+            return date.Date.AddDays(1).AddTicks(-1);
+        }
+
+        public static DateTime StartOfHour(this DateTime date)
+        {
+            return DateTime.ParseExact(date.ToString("yyyy-MM-dd HH"), "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
+            
         }
     }
 }

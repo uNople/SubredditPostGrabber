@@ -223,7 +223,7 @@ namespace SubredditPostGrabber.Holders
         /// <param name="directoryName">Name of the directory.</param>
         /// <param name="pattern">The search pattern. This is a windows one, not a regex, so one like *.xml or HFY_*_*.xml.</param>
         /// <param name="searchOptions">The search options.</param>
-        /// <returns>A List{MattPost}</returns>
+        /// <returns>A List{MattSubreddit}</returns>
         public static List<MattSubreddit> LoadDirectoryOfSubredditData(string directoryName, string pattern, SearchOption searchOptions)
         {
             var subreddits = new List<MattSubreddit>();
