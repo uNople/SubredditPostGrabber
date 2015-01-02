@@ -23,13 +23,14 @@ namespace SubredditPostGrabber.Processors
             SaveFile = Path.Combine(PostsDirectory, string.Format("{0}Comments_{1}.xml", SubredditName, DateTime.Now.ToString(DateTimeFormatString)));
         }
 
-        public void GetCommentsForAllPosts()
+        public void GetCommentsForPosts(List<MattPost> posts)
         {
-            var posts = SaveLoadData.LoadDirectoryOfPosts(PostsDirectory, SubredditName + "_*", SearchOption.TopDirectoryOnly);
+            Console.WriteLine("Getting comments for {0} posts", posts.Count);
             var comments = new List<MattComment>();
-
+            var postsDone = 0;
             foreach (var post in posts)
             {
+                postsDone++;
                 var reddit = new Reddit();
                 try
                 {
@@ -45,10 +46,17 @@ namespace SubredditPostGrabber.Processors
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Problem when getting comments for post {0}. Stacktrace: {1}", post.Title, ex.ToString());
+                    Console.WriteLine("Problem when getting comments for post {0}. Stacktrace: {1}\nURL: {2}", post.Title, ex.ToString(), post.URL);
                 }
                 SaveLoadData.SaveComments(SaveFile, comments);
+                Console.WriteLine("Processed {0} posts. {1} to go", postsDone, posts.Count - postsDone);
             }
+        }
+
+        public void GetCommentsForAllPosts()
+        {
+            var posts = SaveLoadData.LoadDirectoryOfPosts(PostsDirectory, SubredditName + "_*", SearchOption.TopDirectoryOnly);
+            GetCommentsForPosts(posts);
         }
     }
 }

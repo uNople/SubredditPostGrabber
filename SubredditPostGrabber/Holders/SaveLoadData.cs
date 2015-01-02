@@ -157,12 +157,35 @@ namespace SubredditPostGrabber.Holders
                     int nonUnique = 0;
                     foreach (var comment in newComments)
                     {
+                        // If the comment doesn't already exist
                         if (!comments.Any(x => x.Id.Equals(comment.Id)))
                         {
                             comments.Add(comment);
                         }
                         else
                         {
+                            // Check if the comment exists already. If the author or comment is [deleted]
+                            // then restore what we used to have, if we have it.
+                            var oldComment = comments.Where(x => x.Id.Equals(comment.Id)).FirstOrDefault();
+
+                            if (oldComment != null)
+                            {
+                                // If the old comment has [deleted], but the new comment doesn't, then update it
+                                if (oldComment.Author.CIEqual("[deleted]") && !comment.Author.CIEqual("[deleted"))
+                                {
+                                    oldComment.Author = comment.Author;
+                                }
+                                if (oldComment.Body.CIEqual("[deleted]") && !comment.Body.CIEqual("[deleted"))
+                                {
+                                    oldComment.Body = comment.Body;
+                                }
+                            }
+
+                            if (oldComment.Upvotes < comment.Upvotes)
+                            {
+                                oldComment.Upvotes = comment.Upvotes;
+                            }
+
                             nonUnique++;
                         }
                     }
