@@ -99,7 +99,17 @@ namespace SubredditPostGrabber.Utils
         public static DateTime StartOfHour(this DateTime date)
         {
             return DateTime.ParseExact(date.ToString("yyyy-MM-dd HH"), "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
-            
+        }
+
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = dt.DayOfWeek - startOfWeek;
+            if (diff < 0)
+            {
+                diff += 7;
+            }
+
+            return dt.AddDays(-1 * diff).Date;
         }
     }
 }

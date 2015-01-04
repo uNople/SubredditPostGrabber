@@ -17,9 +17,9 @@ namespace SubredditPostGrabber.Utils
         /// <param name="body">The body of the email.</param>
         /// <param name="attachments">List of file paths of attachments you want to send</param>
         /// <param name="toAddresses">Comma separated list of email addresses to email this to</param>
-        public static void SendEmailViaGmail(string subject, string body, List<string> attachments, string toAddresses, string GmailFromAddress, string GmailFromPassword)
+        public static void SendEmailViaGmail(string subject, string body, List<string> attachments, string toAddresses, string gmailFromAddress, string gmailFromPassword)
         {
-            var message = new MailMessage(GmailFromAddress, toAddresses, subject, body);
+            var message = new MailMessage(gmailFromAddress, toAddresses, subject, body);
             foreach (var attachment in attachments)
             {
                 message.Attachments.Add(new Attachment(attachment));
@@ -32,13 +32,14 @@ namespace SubredditPostGrabber.Utils
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(GmailFromAddress, GmailFromPassword)
+                Credentials = new NetworkCredential(gmailFromAddress, gmailFromPassword)
             })
             {
                 // The below two links you need to do on the gmail account you are sending from
                 // https://g.co/allowaccess
                 // https://www.google.com/settings/security/lesssecureapps
                 smtp.Send(message);
+                Console.WriteLine("Sent email from address {0} to people {1} with subject {2}", gmailFromAddress, toAddresses, subject);
             }
         }
     }
